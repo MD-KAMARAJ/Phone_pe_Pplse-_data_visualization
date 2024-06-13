@@ -41,7 +41,7 @@ This project provides interactive data visualizations and insights into PhonePe'
 - Place the cloned repository in the same directory as this project
 
 ### Settingup Instructions
-- Clone the repository to your local machine using git clone ()
+- Clone the repository to your local machine using git clone (https://github.com/MD-KAMARAJ/Phone_pe_pulse-_data_visualization.git)
 
 ### Running the Application
 - Open a terminal and navigate to the project directory.
