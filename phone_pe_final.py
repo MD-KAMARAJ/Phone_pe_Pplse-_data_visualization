@@ -3,11 +3,10 @@ import streamlit as st
 import pymysql
 import pandas as pd
 import json
-import os
 import plotly.express as px
 import requests
 import base64
-from map_user import geo_visual_map_user_district_bar_chart
+
 
 def set_bg_hack(main_bg):
     '''
@@ -1451,13 +1450,14 @@ if st.session_state.page_select == 'Queries':
                                                                                                         GROUP BY Brand_name  ''',
         "How many Map Registered Users were there in state Tamilnadu in the year 2022 and in quarter 3?": '''select State,District, sum(Registered_Users)as Registered_Users from map_user where Year = 2022 and Quarter = 3 and State = "tamil-nadu" group by District''',
         "How many Map App opens were there in state Assam in the year 2023 and in quarter 2?": '''select State,District, sum(App_opens) as App_opens from map_user where Year = 2023 and Quarter = 2 and State = "assam" group by District''',
-        "How many Top Registered Users were there in state karnataka in the year 2022 and in quarter 3?": '''select State,Districts, sum(District_Registered_user)as District_Registered_user from top_user where Year = 2022 and Quarter = 3 and State = "karnataka" group by Districts''',
-        "How many Top Pincode Registered there in state Assam in the year 2021 and in quarter 3?": '''select State,Districts, sum(Pincode_Registered_user) as Pincode_Registered_user from top_user where Year = 2021 and Quarter = 3 and State = "assam" group by Districts''' }
+        "What are the Top Registered Users were there in state karnataka in the year 2022 and in quarter 3?": '''select State,Districts, sum(District_Registered_user)as District_Registered_user from top_user where Year = 2022 and Quarter = 3 and State = "karnataka" group by Districts order by District_Registered_user desc limit 10''',
+        "What are the Top Pincode Registered there in Jorhat District in the state of  Assam in the year 2021 and in quarter 3?": '''SELECT State,Districts,Pincode,SUM(Pincode_Registered_user) AS Pincode_Registered_user FROM top_user WHERE 
+    Year = 2021 AND Quarter = 3 AND State = 'assam' AND Districts = 'jorhat' group BY State, Districts, Pincode order by Pincode_Registered_user desc limit 10 ''' }
 
     query_option = st.selectbox("Select a query to run", list(queries.keys()))
 
     if st.button("Run Query"):
-        query = queries[query_option]
+        query = queries[query_option] # type: ignore
         myconnection = pymysql.connect(host='127.0.0.1', user='root', passwd='Kamaraj@2000', database='phonepe_project')
         cursor = myconnection.cursor()
         cursor.execute(query)
@@ -1506,11 +1506,11 @@ if st.session_state.page_select == 'Queries':
             elif query_option == "How many Map App opens were there in state Assam in the year 2023 and in quarter 2?":
                 fig = px.bar(df, x="District", y="App_opens",hover_name="State", title="Map App openers in Assam for the year 2023 in quarter 2")
                 st.plotly_chart(fig)
-            elif query_option == "How many Top Registered Users were there in state karnataka in the year 2022 and in quarter 3?":
-                fig = px.bar(df, x="Districts", y="Registered_Users",hover_name="State", title="Top Registered Users in Karnataka for the year 2022 in quarter 3")
+            elif query_option == "What are the Top Registered Users were there in state karnataka in the year 2022 and in quarter 3?":
+                fig = px.bar(df, x="Districts", y="District_Registered_user",hover_name="State", title="Top Registered Users in Karnataka for the year 2022 in quarter 3")
                 st.plotly_chart(fig)
-            elif query_option == "How many Top Pincode Registered there in state Assam in the year 2021 and in quarter 3?":
-                fig = px.bar(df, x="Districts", y="Pincode_Registered_user",hover_name="State", title="Top Pincode Registered Users in Assam for the year 2022 in quarter 3")
+            elif query_option == "What are the Top Pincode Registered there in Jorhat District in the state of  Assam in the year 2021 and in quarter 3?":
+                fig = px.pie(df, values="Pincode_Registered_user",names="Pincode", title="Top Pincode Registered Users in Jorhat District of Assam for the year 2022 in quarter 3")
                 st.plotly_chart(fig)
             else:
                 st.warning("Graph for this query option is not configured yet.")
